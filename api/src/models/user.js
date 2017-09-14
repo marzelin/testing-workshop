@@ -1,8 +1,8 @@
-import crypto from 'crypto'
-import mongoose from 'mongoose'
-import uniqueValidator from 'mongoose-unique-validator'
-import jwt from 'jsonwebtoken'
-import {secret} from '../config'
+import crypto from "crypto"
+import mongoose from "mongoose"
+import uniqueValidator from "mongoose-unique-validator"
+import jwt from "jsonwebtoken"
+import { secret } from "../config"
 
 export default getUserSchema
 
@@ -14,41 +14,41 @@ function getUserSchema() {
         lowercase: true,
         unique: true,
         required: [true, `can't be blank`],
-        match: [/^[a-zA-Z0-9]+$/, 'is invalid'],
-        index: true,
+        match: [/^[a-zA-Z0-9]+$/, "is invalid"],
+        index: true
       },
       email: {
         type: String,
         lowercase: true,
         unique: true,
         required: [true, `can't be blank`],
-        match: [/\S+@\S+\.\S+/, 'is invalid'],
-        index: true,
+        match: [/\S+@\S+\.\S+/, "is invalid"],
+        index: true
       },
       bio: String,
       image: String,
-      favorites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Article'}],
-      following: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+      favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Article" }],
+      following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
       hash: String,
-      salt: String,
+      salt: String
     },
-    {timestamps: true},
+    { timestamps: true }
   )
 
-  UserSchema.plugin(uniqueValidator, {message: 'is already taken.'})
+  UserSchema.plugin(uniqueValidator, { message: "is already taken." })
 
   UserSchema.methods.validPassword = function(password) {
     const hash = crypto
-      .pbkdf2Sync(password, this.salt, 10000, 512, 'sha512')
-      .toString('hex')
+      .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
+      .toString("hex")
     return this.hash === hash
   }
 
   UserSchema.methods.setPassword = function(password) {
-    this.salt = crypto.randomBytes(16).toString('hex')
+    this.salt = crypto.randomBytes(16).toString("hex")
     this.hash = crypto
-      .pbkdf2Sync(password, this.salt, 10000, 512, 'sha512')
-      .toString('hex')
+      .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
+      .toString("hex")
   }
 
   UserSchema.methods.generateJWT = function() {
@@ -60,9 +60,9 @@ function getUserSchema() {
       {
         id: this._id,
         username: this.username,
-        exp: parseInt(exp.getTime() / 1000, 10),
+        exp: parseInt(exp.getTime() / 1000, 10)
       },
-      secret,
+      secret
     )
   }
 
@@ -72,7 +72,7 @@ function getUserSchema() {
       email: this.email,
       bio: this.bio,
       token: this.generateJWT(),
-      image: this.image,
+      image: this.image
     }
   }
 
@@ -80,10 +80,8 @@ function getUserSchema() {
     return {
       username: this.username,
       bio: this.bio,
-      // this is where the bug is...
-      // we're not adding this.image
-      // to the object!
-      following: user ? user.isFollowing(this._id) : false,
+      image: this.image,
+      following: user ? user.isFollowing(this._id) : false
     }
   }
 
