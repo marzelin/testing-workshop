@@ -12,6 +12,7 @@
     "setup": "node ./scripts/verify && node ./scripts/install && node ./scripts/load-database && npm start validate"
   },
   "devDependencies": {
+    "@types/jest": "^20.0.8",
     "all-contributors-cli": "^4.1.0",
     "babel-eslint": "^7.2.2",
     "babel-polyfill": "^6.23.0",
