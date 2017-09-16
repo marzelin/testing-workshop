@@ -1,6 +1,6 @@
-import React from 'react'
-import {mount} from 'enzyme'
-import {Component as Editor} from '../editor'
+import React from "react"
+import { mount } from "enzyme"
+import { Component as Editor } from "../editor"
 
 // Here's where your tests go... What are the use-cases
 // our editor should support? Here are some ideas:
@@ -13,6 +13,30 @@ import {Component as Editor} from '../editor'
 //   and play around with the tag component. How could we use some
 //   of the utilities to make sure that interaction keeps working?
 
+test("editor renders", () => {
+  const wrapper = mountEditor()
+  expect(wrapper.html()).toMatchSnapshot()
+})
+
+test("editor is loaded", () => {
+  const onLoadMock = jest.fn()
+  const wrapper = mountEditor({
+    onLoad: onLoadMock
+  })
+  expect(onLoadMock).toHaveBeenCalledTimes(1)
+})
+
+test("onSubmit is called after clicking the submit button", () => {
+  const onSubmit = jest.fn()
+  const wrapper = mountEditor({
+    onSubmit
+  })
+  const form = wrapper.find("form")
+  expect(onSubmit).toHaveBeenCalledTimes(0)
+  form.simulate("submit")
+  expect(onSubmit).toHaveBeenCalledTimes(1)
+})
+
 // I'm going to go ahead and give these utils to you
 // because I think you get the idea :)
 // And this is a little domain-specific anyway.
@@ -21,14 +45,14 @@ function mountEditor(props = {}) {
     onLoad() {},
     onSubmit() {},
     onUnload() {},
-    articleSlug: '',
-    title: '',
-    description: '',
-    body: '',
+    articleSlug: "",
+    title: "",
+    description: "",
+    body: "",
     tagList: [],
     inProgress: false,
     params: {},
-    ...props,
+    ...props
   }
   return mount(<Editor {...propsToUse} />)
 }
@@ -38,7 +62,7 @@ function mountEditor(props = {}) {
 // changeInputValue(tagInput, 'hello')
 // will change the input's value to 'hello'
 function changeInputValue(input, value) {
-  input.simulate('change', {target: {value}})
+  input.simulate("change", { target: { value } })
 }
 
 // this helper will make it easier to fire the keyUp event
@@ -46,7 +70,7 @@ function changeInputValue(input, value) {
 // keyUpInput(tagInput, 13)
 // will fire the "enter" key on that input
 function keyUpInput(input, keyCode) {
-  input.simulate('keyup', {keyCode})
+  input.simulate("keyup", { keyCode })
 }
 
 // this helper will make it easier for you to find
@@ -65,7 +89,7 @@ function sel(id) {
 /*
 http://ws.kcd.im/?ws=Testing&e=Client%20Unit%20Editor&em=
 */
-test.skip('I submitted my elaboration and feedback', () => {
+test.skip("I submitted my elaboration and feedback", () => {
   const submitted = false // change this when you've submitted!
   expect(true).toBe(submitted)
 })
